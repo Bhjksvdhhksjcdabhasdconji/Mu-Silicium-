@@ -21,13 +21,12 @@ jobs:
       - name: Install Build Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential uuid-dev iasl nasm python3-pip clang lld llvm gcc-aarch64-linux-gnu
+          sudo apt-get install -y build-essential uuid-dev iasl nasm python3-pip clang lld llvm gcc-aarch64-linux-gnu mono-complete ca-certificates-mono
           pip install -r pip-requirements.txt
 
       - name: Link DarwinBootPkg & Patch nabu APRIORI
         run: |
           ln -s "$PWD/UniXNU/DarwinBootPkg" "$PWD/DarwinBootPkg"
-          # Ensure DarwinBoot is dispatched in APRIORI DXE
           APRIORI_FILE=$(find Silicium-ACPI/Platforms/Xiaomi/nabu* -name "APRIORI.inc" | head -n 1)
           if [ -n "$APRIORI_FILE" ]; then
             sed -i '/APRIORI DXE {/a \    INF DarwinBootPkg/Driver/DarwinBoot.inf' "$APRIORI_FILE"
@@ -42,5 +41,6 @@ jobs:
         with:
           name: nabu-uefi-unixnu
           path: |
-            Build/**/nabu*.img
-            Build/**/SM8150_EFI.fd
+            Build/**/*.img
+            Build/**/*.fd
+            Build/**/BootShim.bin
